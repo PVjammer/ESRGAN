@@ -1,5 +1,6 @@
-## Fork of ESRGAN (Enhanced SRGAN) [[BasicSR]](https://github.com/xinntao/BasicSR) [[EDVR]](https://github.com/xinntao/EDVR) [[DNI]](https://xinntao.github.io/projects/DNI)
+## Fork of ESRGAN (Enhanced SRGAN)
 
+----- Content Below from Original README ----
 We have simplified the network structure file.<br/>
 You can convert the previously save models (`*.pth`) with the script `transer_RRDB_models.py`;<br/>
 If you want to use the old arch, you can find it [here](https://github.com/xinntao/ESRGAN/releases/tag/old-arch).
