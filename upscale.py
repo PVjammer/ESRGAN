@@ -62,11 +62,17 @@ def load_frames(cap):
 def main(args):
     frame_list = []
     frame_num = 0
-    cap = cv2.VideoCapture(int(args.cam_id))
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, int(args.width))    
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, int(args.height))
+    if args.video:
+        cap = cv2.VideoCapture(args.video)
+    else:
+        cap = cv2.VideoCapture(int(args.cam_id))
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, int(args.width))    
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, int(args.height))
     while cap.isOpened():
         ret, frame = cap.read()
+        print(frame.shape)
+        if args.video:
+            frame = cv2.resize(frame, (int(args.width), int(args.height)))
         if not ret:
             print("Stream unavailable")
             return 0
@@ -98,12 +104,16 @@ def render():
             time.sleep(1)
             continue
         frame = out_q.get()
+        print(frame.shape)
         cv2.imshow("Upscale", frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
 def run(args):
-    cap = cv2.VideoCapture(int(args.cam_id))
+    if args.video:
+        cap = cv2.VideoCapture(args.video)
+    else:
+        cap = cv2.VideoCapture(int(args.cam_id))
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, int(args.width))
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, int(args.height))
     if not cap.isOpened():
@@ -125,14 +135,16 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--cam_id", default=0, help="Integer identifier of the camera to use")
+    parser.add_argument("--video", default=None, help="Path of video file to upscale")
+    parser.add_argument("--out", default=".", help="Path of the output video")
     parser.add_argument("--width", default=490, help="Width of the camera stream")
     parser.add_argument("--height", default=270, help="Height of the camera stream")
-    parser.add_argument("--upscale", default=True, help="If true renders an upscaled version of the video", action="store_true")
+    parser.add_argument("--upscale", default=False, help="If true renders an upscaled version of the video", action="store_true")
 
     args = parser.parse_args()
 
-#    frame_list = main(args)
-#    print(len(frame_list))
-#    #render(frame_list)
-    run(args)
+    frame_list = main(args)
+    print(len(frame_list))
+    render(frame_list)
+#    run(args)
 cv2.destroyAllWindows()
